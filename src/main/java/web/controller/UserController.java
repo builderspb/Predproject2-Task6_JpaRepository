@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import web.dao.UserDAO;
 import web.model.User;
+import web.service.UserService;
 
 import java.util.List;
 
@@ -13,17 +14,16 @@ import java.util.List;
 @Controller
 public class UserController {
 
-    private final UserDAO userDAO;
+    private UserService userService;
 
     @Autowired
-    public UserController(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-
     @GetMapping("/")
-    public String getUsers(Model model) {
-        List<User> users = userDAO.allUsers(); // Получение списка пользователей
+    public String allUsers(Model model) {
+        List<User> users = userService.allUsers(); // Получение списка пользователей
         model.addAttribute("users", users); // Добавление списка пользователей в модель
         return "view/user-list"; // Возвращаем имя HTML-файла для отображения
     }
