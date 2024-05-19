@@ -4,11 +4,12 @@ package web.service.UserLogicService;
 import org.springframework.stereotype.Service;
 import web.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserCacheAndSortedServiceImpl implements UserCacheAndSortedService {
-    private List<User> userList;
+    private List<User> userList = new ArrayList<>();
 
 
     // Получить всех пользователей из сохраненного списка(экономим запрос к бд при манипуляции с пользователями)
@@ -26,16 +27,13 @@ public class UserCacheAndSortedServiceImpl implements UserCacheAndSortedService 
 
 
     // Получить пользователя из сохраненного списка(экономим запрос к бд при манипуляции с пользователями)
+
     @Override
     public User getUserByIdFromList(long id) {
-        if (userList != null) {
-            for (User user : userList) {
-                if (user.getId() == id) {
-                    return user;
-                }
-            }
-        }
-        return null;
+        return userList.stream()
+                .filter(user -> user.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
 
@@ -78,7 +76,7 @@ public class UserCacheAndSortedServiceImpl implements UserCacheAndSortedService 
     @Override
     public List<User> getAllUsersSorted(List<User> users) {
         users.sort((u1, u2) -> Long.compare(u1.getId(), u2.getId()));
-        return users;
+        return new ArrayList<>(userList); // Возвращаем копию списка для предотвращения изменений
     }
 }
 

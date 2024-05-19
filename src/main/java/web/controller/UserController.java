@@ -31,7 +31,7 @@ public class UserController {
     // Кнопка "Edit" на главной странице перенаправляет на страницу редактирования пользователя /editUser/{id}.
     @GetMapping(path = "/", produces = "text/plain;charset=UTF-8")
     public String getAllUsers(Model model) {
-        List<User> users = userCacheAndSortedService.getAllUsersSorted(userService.getAllUsers());
+        List<User> users = userCacheAndSortedService.getAllUsersSorted(userCacheAndSortedService.getUserListCache());
         model.addAttribute("users", users);
 
         return "user-info";
