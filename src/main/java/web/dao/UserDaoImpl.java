@@ -1,40 +1,62 @@
 package web.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import web.model.User;
+
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
+
 
 @Repository
 public class UserDaoImpl implements UserDAO {
+    @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    public UserDaoImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
+
+    // Получить полный список юзеров
+    @Override
+    public List<User> getAllUsers() {
+        return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 
+    // Получить юзера по ID
     @Override
-    public List<User> allUsers() {
-        return entityManager.createQuery("SELECT u FROM User u", User.class)
-                .getResultList();
+    public User getUserById(long id) {
+        return entityManager.find(User.class, id);
     }
 
 
-
+    // Сохранить нового/измененного юзера
     @Override
-    public void addUser() {
-
+    public void saveUser(User user) {
+        if (user.getId() == null) {
+            entityManager.persist(user);
+        } else {
+            entityManager.merge(user);
+        }
     }
 
-    @Override
-    public void changeUser() {
 
+    // Обновление юзера по ID
+    @Override
+    public void updateUser(long id, String newName, String newLastName,  String newPhoneNumber, String newEmail) {
+        User user = entityManager.find(User.class, id);
+        if (user != null) {
+            user.setName(newName);
+            user.setLastName(newLastName);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setEmail(newEmail);
+        }
     }
 
-    @Override
-    public void deleteUser() {
 
+    // Удаление юзера по ID
+    @Override
+    public void deleteUser(long id) {
+        User user = entityManager.find(User.class, id);
+        if (user.getId() != null) {
+            entityManager.remove(user);
+        }
     }
 }

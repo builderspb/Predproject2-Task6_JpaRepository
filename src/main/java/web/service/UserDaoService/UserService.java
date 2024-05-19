@@ -1,10 +1,10 @@
-package web.dao;
+package web.service.UserDaoService;
 
 import web.model.User;
 
 import java.util.List;
 
-public interface UserDAO {
+public interface UserService {
 
     List<User> getAllUsers();
 
@@ -15,6 +15,5 @@ public interface UserDAO {
     void updateUser(long id, String newName, String newLastName, String newPhoneNumber, String newEmail);
 
     void deleteUser(long id);
-
 
 }

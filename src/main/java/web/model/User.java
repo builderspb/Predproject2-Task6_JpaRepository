@@ -1,6 +1,11 @@
 package web.model;
 
+import web.validation.CheckEmail;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -8,26 +13,42 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
+
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 2, message = "name must be min 2 symbols")
     @Column(name = "name")
     private String name;
+
+    @NotBlank(message = "Last name cannot be blank")
     @Column(name = "lastname")
     private String lastName;
+
+    @Column(name = "phoneNumber")
+    @Pattern(regexp = "\\d{3}-\\d{2}-\\d{2}", message = "please use pattern XXX-XX-XX")
+    private String phoneNumber;
+
+    @Column(name = "email")
+    @CheckEmail(value = "abc.com", message = "email must ends with abc.com")
+    private String email;
+
 
     public User() {
     }
 
-    public User(String name, String lastName) {
+    public User(String name, String lastName, String phoneNumber, String email) {
         this.name = name;
         this.lastName = lastName;
-
+        this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 
-    public int getId() {
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,17 +68,33 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && Objects.equals(name, user.name) && Objects.equals(lastName, user.lastName);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(lastName, user.lastName) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(email, user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, lastName);
+        return Objects.hash(id, name, lastName, phoneNumber, email);
     }
 
     @Override
@@ -66,6 +103,8 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
