@@ -1,4 +1,4 @@
-package web.validation;
+package web.util.userValidation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

@@ -7,8 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import web.model.User;
-import web.service.UserDaoService.UserService;
-import web.service.UserLogicService.UserCacheAndSortedService;
+import web.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,13 +15,12 @@ import java.util.List;
 
 @Controller
 public class UserController {
-    private UserService userService;
-    private final UserCacheAndSortedService userCacheAndSortedService;
+
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService, UserCacheAndSortedService userCacheAndSortedService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userCacheAndSortedService = userCacheAndSortedService;
     }
 
 
@@ -31,7 +29,7 @@ public class UserController {
     // Кнопка "Edit" на главной странице перенаправляет на страницу редактирования пользователя /editUser/{id}.
     @GetMapping(path = "/", produces = "text/plain;charset=UTF-8")
     public String getAllUsers(Model model) {
-        List<User> users = userCacheAndSortedService.getAllUsersSorted(userCacheAndSortedService.getUserListCache());
+        List<User> users = userService.findAll();
         model.addAttribute("users", users);
 
         return "user-info";
@@ -63,7 +61,7 @@ public class UserController {
 
             return "addNewUser";
         }
-        userService.saveUser(user);
+        userService.save(user);
         redirectAttributes.addFlashAttribute("message", "(*>) User added successfully!");
         redirectAttributes.addFlashAttribute("addedUserId", user.getId());
 
@@ -74,7 +72,7 @@ public class UserController {
     // Переход на страницу редактирования пользователя. Кнопка SAVE направляет на страницу /updateUser
     @GetMapping(path = "/editUser/{id}", produces = "text/plain;charset=UTF-8")
     public String showUpdate(@PathVariable long id, Model model) {
-        User user = userCacheAndSortedService.getUserByIdFromList(id);
+        User user = userService.findOne(id);
         model.addAttribute("user", user);
 
         return "updateUser";
@@ -92,7 +90,7 @@ public class UserController {
             return "updateUser"; // Возвращаем имя шаблона, чтобы отобразить ошибки
         }
         try {
-            userService.updateUser(user.getId(), user.getName(), user.getLastName(), user.getPhoneNumber(), user.getEmail());
+            userService.update(user.getId(), user);
             redirectAttributes.addFlashAttribute("message", "(*>) User updated successfully!");
             redirectAttributes.addFlashAttribute("updatedUserId", user.getId());
         } catch (IllegalArgumentException e) {
@@ -106,7 +104,7 @@ public class UserController {
     // Удаление пользователя по ID
     @PostMapping(path = "/deleteUser", produces = "text/plain;charset=UTF-8")
     public String deleteUser(@RequestParam long id, RedirectAttributes redirectAttributes) {
-        userService.deleteUser(id);
+        userService.delete(id);
         redirectAttributes.addFlashAttribute("message", "User deleted successfully!");
 
         return "redirect:/";

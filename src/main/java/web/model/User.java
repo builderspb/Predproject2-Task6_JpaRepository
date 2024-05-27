@@ -1,6 +1,6 @@
 package web.model;
 
-import web.validation.CheckEmail;
+import web.util.userValidation.CheckEmail;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
